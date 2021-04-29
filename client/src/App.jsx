@@ -22,7 +22,7 @@ function App() {
           <Route path="/" exact>
             <Home />
           </Route>
-          <Route path="/interview/:interview_id" >
+          <Route path="/interview/" >
             <Interview />
           </Route>
           <Route path="/interview/:interview_id/review" >
