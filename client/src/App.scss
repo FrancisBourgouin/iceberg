@@ -55,7 +55,7 @@ body{
   padding:1em;
   display: flex;
   justify-content: space-between;
-  
+
   .CodeMirror-container{
     border:0.2em solid black;
     &.read-only{
@@ -78,6 +78,9 @@ body{
 
     .webcam{
       display: flex;
+      video{
+        height:200px;
+      }
       div{
         width:200px;
         height:200px;
