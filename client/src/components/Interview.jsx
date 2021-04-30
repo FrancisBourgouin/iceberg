@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Controlled as CodeMirror } from 'react-codemirror2'
+import io from 'socket.io-client'
+
 
 import useWebcam from '../hooks/useWebcam'
 import 'codemirror/lib/codemirror.css'
@@ -18,9 +20,17 @@ const Interview = props => {
 
   const [code, setCode] = useState(starterCode)
   const [takeOver, setTakeOver] = useState(false)
+  const [socket, setSocket] = useState(null)
 
   const webcamFeed = useRef()
   const { authorized, webcamList, stream, chooseStream } = useWebcam()
+
+  useEffect(() => {
+    const newSocket = io()
+
+    newSocket.on('message', (data) => console.log(data))
+    setSocket(newSocket)
+  }, [])
 
   useEffect(() => {
     if (!stream) {

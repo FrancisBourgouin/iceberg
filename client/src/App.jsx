@@ -13,8 +13,10 @@ import InterviewView from './components/InterviewView'
 import InterviewNew from './components/InterviewNew'
 
 import './App.scss';
+import io from 'socket.io'
 
 function App() {
+  io()
   return (
     <div className="App">
       <Router>
