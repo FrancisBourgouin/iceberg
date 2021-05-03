@@ -1,29 +1,38 @@
 import { useEffect, useRef, useState } from 'react';
 import { Controlled as CodeMirror } from 'react-codemirror2'
 import io from 'socket.io-client'
+import { useParams } from "react-router-dom";
 
+import useWebcam from '../../hooks/useWebcam'
 
-import useWebcam from '../hooks/useWebcam'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
 import 'codemirror/theme/neat.css'
 import 'codemirror/mode/javascript/javascript.js'
+import '../../styles/Live.scss'
+import '../../styles/editor/iceberg-code-dark.scss'
 
-const starterCode = `
-const bob = () => console.log("pollo")
+
+const starterCode = `const bob = () => console.log("pollo")
 
 const someFunction = () => {
   console.log('🐔🐔🐔')
 }
 `
-const Interview = props => {
+const Live = props => {
 
   const [code, setCode] = useState(starterCode)
   const [takeOver, setTakeOver] = useState(false)
+  const [viewSettings, setViewSettings] = useState(false)
   const [socket, setSocket] = useState(null)
 
   const webcamFeed = useRef()
-  const { authorized, webcamList, stream, chooseStream } = useWebcam()
+  const { webcamList, stream, chooseStream } = useWebcam()
+  const { interviewId } = useParams();
+
+
+  const toggleSettings = () => setViewSettings(!viewSettings)
+  console.log(interviewId)
 
   useEffect(() => {
     const newSocket = io()
@@ -51,13 +60,13 @@ const Interview = props => {
   })
 
   const options = {
-    theme: 'material',
+    theme: 'iceberg-dark',
     tabSize: 2,
     mode: 'javascript',
     readOnly: !takeOver
   }
   return (
-    <main className="Interview">
+    <main className="Live">
       <section class={`CodeMirror-container ${!takeOver ? 'read-only' : ''}`}>
         <CodeMirror
           value={code}
@@ -72,14 +81,21 @@ const Interview = props => {
       </section>
       <aside>
         <section className="webcam">
-          <video ref={webcamFeed} onLoadedData={() => webcamFeed.current.play()}></video>
-          <div>Candidate</div>
+          <video
+            ref={webcamFeed}
+            onLoadedData={() => webcamFeed.current.play()}
+            onClick={toggleSettings}></video>
+          <section>
+            {viewSettings && streams}
+          </section>
+          <video ></video>
         </section>
+
         <section>
-          {streams}
-        </section>
-        <section>
-          <button onClick={() => setTakeOver(!takeOver)}>Take over</button>
+          <button onClick={() => setTakeOver(!takeOver)}>
+            {!takeOver && <span>Take over</span>}
+            {takeOver && <span>Give back control</span>}
+          </button>
         </section>
       </aside>
     </main>
@@ -87,4 +103,4 @@ const Interview = props => {
 
 }
 
-export default Interview
+export default Live

@@ -1,0 +1,56 @@
+.Live{
+  height:100%;
+  padding:2em;
+  display: flex;
+  justify-content: space-between;
+
+  .CodeMirror-container{
+    border:0.2em solid red;
+    &.read-only{
+      border-color: var(--dark-primary-color);
+
+    }
+  }
+  .CodeMirror{
+    width:70vw;
+    min-width:700px;
+    height:80vh;
+    font-size:1.5em;
+    padding:1em;
+    color:white;
+    background-color: #333;
+  }
+
+
+  aside{
+    display: flex;
+    flex-direction: column;
+
+    .webcam{
+      display: flex;
+      flex-direction: column;
+      
+      video{
+        height:200px;
+        border:0.3em solid var(--dark-secondary-color);
+        margin:0.5em 0;
+      }
+    }    
+    
+    button{
+      color:var(--dark-primary-color);
+      background-color: var(--dark-highlight-color);
+      width:100%;
+      border:none;
+      margin:0.5em 0;
+      font-size:2em;
+      padding:0.5em 0.25em;
+      cursor: pointer;
+
+      &:hover{
+        background-color:var(--dark-primary-color);
+        color: var(--dark-background-color);
+      }
+    }
+  }
+}
