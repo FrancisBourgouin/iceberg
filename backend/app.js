@@ -24,7 +24,21 @@ app.use('/users', usersRouter);
 
 io.on('connection', (socket) => {
   console.log('a user connected');
-  socket.emit('message', 'Hello')
+  socket.emit('message', 'Hello');
+
+  socket.on('join', data => {
+    const { interviewId } = data
+    socket.join(interviewId)
+  })
+
+  socket.on('updateCode', data => {
+    const { interviewId, code } = data
+    socket.to(interviewId).emit('codeUpdate', code)
+  })
+  socket.on('lockCode', data => {
+    const { interviewId, lock } = data
+    socket.to(interviewId).emit('codeLock', lock)
+  })
 });
 
 

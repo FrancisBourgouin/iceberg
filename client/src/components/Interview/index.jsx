@@ -10,6 +10,7 @@ import Review from "./Review";
 import View from "./View";
 
 const Interview = props => {
+  const { interviewer } = props
   const match = useRouteMatch();
 
   return (
@@ -21,7 +22,7 @@ const Interview = props => {
         <Book />
       </Route>
       <Route path={`${match.path}/live/:interviewId`}>
-        <Live />
+        <Live {...{ interviewer }} />
       </Route>
       <Route path={`${match.path}/review`}>
         <Review />

@@ -10,19 +10,19 @@ import Interview from './components/Interview'
 import Home from './components/Home'
 
 import './App.scss';
-import io from 'socket.io'
+import { useState } from "react";
 
 function App() {
-  io()
+  const [interviewer, setInterviewer] = useState(null)
   return (
     <div className="App dark">
       <Router>
         <Switch>
           <Route path="/" exact>
-            <Home />
+            <Home {...{ setInterviewer }} />
           </Route>
           <Route path="/interview" >
-            <Interview />
+            <Interview {...{ interviewer }} />
           </Route>
           <Route path="/dashboard">
             <Dashboard />

@@ -20,9 +20,9 @@ const someFunction = () => {
 }
 `
 const Live = props => {
-
+  const { interviewer } = props
   const [code, setCode] = useState(starterCode)
-  const [takeOver, setTakeOver] = useState(false)
+  const [takeOver, setTakeOver] = useState(!interviewer)
   const [viewSettings, setViewSettings] = useState(false)
   const [socket, setSocket] = useState(null)
 
@@ -30,14 +30,35 @@ const Live = props => {
   const { webcamList, stream, chooseStream } = useWebcam()
   const { interviewId } = useParams();
 
+  const updateCode = value => {
+    setCode(value)
+    socket.emit('updateCode', { interviewId, code: value })
+  }
+
+  const updateTakeOver = () => {
+    socket.emit('lockCode', { interviewId, lock: takeOver })
+
+    setTakeOver(!takeOver)
+  }
+
 
   const toggleSettings = () => setViewSettings(!viewSettings)
-  console.log(interviewId)
 
   useEffect(() => {
     const newSocket = io()
 
     newSocket.on('message', (data) => console.log(data))
+    newSocket.on('connect', () => {
+      newSocket.emit('join', { interviewId })
+    })
+    newSocket.on('codeUpdate', data => {
+      setCode(data)
+    })
+    newSocket.on('codeLock', data => {
+      console.log('settakeover')
+      setTakeOver(data)
+    })
+
     setSocket(newSocket)
   }, [])
 
@@ -73,7 +94,7 @@ const Live = props => {
           options={options}
 
           onBeforeChange={(editor, data, value) => {
-            setCode(value)
+            updateCode(value)
           }}
           onChange={(editor, data, value) => {
           }}
@@ -91,12 +112,12 @@ const Live = props => {
           <video ></video>
         </section>
 
-        <section>
-          <button onClick={() => setTakeOver(!takeOver)}>
+        {interviewer && <section>
+          <button onClick={updateTakeOver}>
             {!takeOver && <span>Take over</span>}
             {takeOver && <span>Give back control</span>}
           </button>
-        </section>
+        </section>}
       </aside>
     </main>
   )
