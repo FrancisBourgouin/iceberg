@@ -39,6 +39,10 @@ io.on('connection', (socket) => {
     const { interviewId, lock } = data
     socket.to(interviewId).emit('codeLock', lock)
   })
+  socket.on('webcamOffer', data => {
+    const { interviewId, webcamId, offer } = data
+    socket.to(interviewId).emit('webcamAnswer', { webcamId, offer })
+  })
 });
 
 

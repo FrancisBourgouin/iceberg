@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Controlled as CodeMirror } from 'react-codemirror2'
 import io from 'socket.io-client'
 import { useParams } from "react-router-dom";
-
 import useWebcam from '../../hooks/useWebcam'
 
 import 'codemirror/lib/codemirror.css'
@@ -24,6 +23,7 @@ const Live = props => {
   const [code, setCode] = useState(starterCode)
   const [takeOver, setTakeOver] = useState(!interviewer)
   const [viewSettings, setViewSettings] = useState(false)
+  const [peerConnection, setPeerConnection] = useState(null)
   const [socket, setSocket] = useState(null)
 
   const webcamFeed = useRef()
@@ -44,6 +44,38 @@ const Live = props => {
 
   const toggleSettings = () => setViewSettings(!viewSettings)
 
+
+  useEffect(async () => {
+    if (stream) {
+      const newPeerConnection = new RTCPeerConnection({
+        iceServers: [{ urls: 'stun:stun.test.com:19000' }],
+      });
+      setPeerConnection(newPeerConnection)
+
+
+    }
+  }, [stream])
+
+  useEffect(async () => {
+    if (peerConnection) {
+      const webcamId = Math.floor(Math.random() * 10000)
+      const stream2 = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: true,
+      });
+      stream2.getTracks().forEach(track => peerConnection.addTrack(
+        track,
+        stream,
+      ));
+
+      const offer = await peerConnection.createOffer();
+
+      await peerConnection.setLocalDescription(offer);
+
+      socket.emit('webcamOffer', { interviewId, webcamId, offer })
+      console.log(offer)
+    }
+  }, [peerConnection])
   useEffect(() => {
     const newSocket = io()
 
@@ -57,6 +89,17 @@ const Live = props => {
     newSocket.on('codeLock', data => {
       console.log('settakeover')
       setTakeOver(data)
+    })
+
+    newSocket.on('webcamAnswer', async data => {
+      const { webcamId, offer } = data
+      await peerConnection.setRemoteDescription(offer);
+      const answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(offer);
+      socket.emit('webcamOffer', { interviewId, webcamId, answer })
+
+
+
     })
 
     setSocket(newSocket)
