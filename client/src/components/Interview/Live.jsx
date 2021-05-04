@@ -76,6 +76,7 @@ const Live = props => {
       console.log(offer)
     }
   }, [peerConnection])
+
   useEffect(() => {
     const newSocket = io()
 
